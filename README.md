@@ -1,4 +1,4 @@
-# Welcome to the Random Sequence Word Finder
+# The Random Sequence Word Finder
 
 This is a program that when run, tries to find the input word in a sequence of completely random numbers
 
