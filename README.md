@@ -7,7 +7,7 @@ Imagine a string of random numbers, then imagine each was assigned to a letter e
 This way, we may eventually find the numbers (letters) in the exact order as the input word
 
 Usage:
-> `python3 randomsequencewordfinder.py <word> -t <threads>`
+> `python3 randomsequencewordfinder.py <word> -t <threads> -l <logfile>`
 
 Known Bugs:
 > Some threads may not finish before the found flag is activated, allowing messages to show after the completion message

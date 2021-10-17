@@ -15,7 +15,9 @@ import time
 # setup commandline arguments
 parser = argparse.ArgumentParser(description='Random Sequence Word Finder')
 parser.add_argument('w', type=str, help='Word to be used')
-parser.add_argument( '-t', '--threads', default=3, help='number of threads to use')
+parser.add_argument('-t', '--threads', default=3, help='number of threads to use', type=int)
+parser.add_argument('-l', '--log', default='', help='log to file')
+
 args = parser.parse_args()
 
 # global variables
@@ -24,7 +26,14 @@ startTime = None
 elapsedTime = None
 
 word = args.w
+logFile = args.log
 letter = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'] 
+log = []
+
+# logging function
+def printf(toPrint):
+    print(toPrint)
+    log.append(toPrint)
 
 # main function
 def start(assignedNumber:int):
@@ -52,7 +61,7 @@ def start(assignedNumber:int):
             if len(lastSequence) < len(complete):
                 lastSequence = complete
                 if not found:
-                    print("[Thread {}] Sequence: {}, Tries: {}".format(assignedNumber, "".join(complete), tries))
+                    printf("[Thread {}] Sequence: {}, Tries: {}".format(assignedNumber, "".join(complete), tries))
             complete = []
         numberSequence.append(newNumber + 1)
         if found:
@@ -65,8 +74,6 @@ def start(assignedNumber:int):
         elapsedTime = time.time() - startTime
 
     if threadFound:
-        threadNumber = assignedNumber
-
         # get last N numbers/letters to show randomness
         numberSequenceSnapshot = numberSequence[-N:]
 
@@ -74,10 +81,11 @@ def start(assignedNumber:int):
         for i in numberSequenceSnapshot:
             numberSequenceSnapshotLetters.append(letter[i - 1])
         
-        print("--- [Thread {}] found word \"{}\" in {} tries, which took {:.2f} seconds".format(assignedNumber, word, tries, elapsedTime))
-        print("--- [Thread {}] Number Sequence (Minus 10 Numbers): {}".format(assignedNumber, numberSequenceSnapshot))
-        print("--- [Thread {}] Letter Sequence (Minus 10 Letters): {}".format(assignedNumber, "".join(numberSequenceSnapshotLetters)))
+        printf("--- [Thread {}] found word \"{}\" in {} tries, which took {:.2f} seconds".format(assignedNumber, word, tries, elapsedTime))
+        printf("--- [Thread {}] Number Sequence (Minus 10 Numbers): {}".format(assignedNumber, numberSequenceSnapshot))
+        printf("--- [Thread {}] Letter Sequence (Minus 10 Letters): {}".format(assignedNumber, "".join(numberSequenceSnapshotLetters)))
 
+# create/start threds
 threads = []
 for i in range(0, int(args.threads)):
     threads.append(threading.Thread(target=start, args=[i + 1]))
@@ -89,4 +97,10 @@ for t in threads:
 for t in threads:
     t.join()
 
-print("Process Complete.")
+# print logfile
+if logFile != '':
+    printf("Writing Log File...")
+    printf("Process Complete.")
+    with open(logFile, 'w') as f:
+        for line in log:
+            f.write(line + "\n")
